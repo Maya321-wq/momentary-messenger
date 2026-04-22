@@ -18,10 +18,10 @@ const login = async (req, res) => {
     }
 
     const phone = process.env.MFA_PHONE_NUMBER;
-    const sid = await sendOTP(phone);
+    // Pass socketId so twilioService can emit its own pulse events
+    const sid = await sendOTP(phone, socketId);
     await storeMfaSid(uid, sid);
 
-    if (socketId) pulse(socketId, 'TWILIO', `MFA challenge dispatched to ${phone}`);
     if (socketId) pulse(socketId, 'AUTH', 'Awaiting SMS code verification');
 
     return res.status(200).json({
@@ -47,13 +47,13 @@ const verifyMfa = async (req, res) => {
 
   try {
     const phone = process.env.MFA_PHONE_NUMBER;
-    const approved = await verifyOTP(phone, code);
+    // Pass socketId so twilioService emits its pulse
+    const approved = await verifyOTP(phone, code, socketId);
 
     if (!approved) return res.status(401).json({ error: 'Invalid or expired OTP' });
 
     await deleteMfaSid(uid);
 
-    if (socketId) pulse(socketId, 'TWILIO', 'SMS code verified. Session promoted to SECURE');
     if (socketId) pulse(socketId, 'AUTH', `Session SECURE for ${uid}`);
 
     return res.status(200).json({ status: 'SECURE' });

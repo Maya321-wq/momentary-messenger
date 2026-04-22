@@ -7,16 +7,15 @@ const getRoomKey = (uid1, uid2) => {
   return `chat:${sorted[0]}_${sorted[1]}`;
 };
 
-const saveMessage = async (uid1, uid2, message) => {
-  const key = getRoomKey(uid1, uid2);
-  await redis.lpush(key, JSON.stringify(message));
-  await redis.expire(key, TTL);
-  return { key, ttl: TTL };
+// Signature changed to (roomId, message) to match issue #6 spec
+const saveMessage = async (roomId, message) => {
+  await redis.lpush(roomId, JSON.stringify(message));
+  await redis.expire(roomId, TTL);
+  return { key: roomId, ttl: TTL };
 };
 
-const getMessages = async (uid1, uid2) => {
-  const key = getRoomKey(uid1, uid2);
-  const raw = await redis.lrange(key, 0, -1);
+const getMessages = async (roomId) => {
+  const raw = await redis.lrange(roomId, 0, -1);
   return raw.map((m) => JSON.parse(m)).reverse();
 };
 
