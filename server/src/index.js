@@ -1,7 +1,8 @@
 require('dotenv').config();
 require('./config/firebase');
-const connectMongo = require('./config/mongo');
+require('./config/redis');
 
+const connectMongo = require('./config/mongo');
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
