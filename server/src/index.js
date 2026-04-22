@@ -1,5 +1,6 @@
 require('dotenv').config();
 require('./config/firebase');
+const connectMongo = require('./config/mongo');
 
 const express = require('express');
 const cors = require('cors');
@@ -18,8 +19,15 @@ app.get('/health', (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-httpServer.listen(PORT, () => {
-  console.log(`[SERVER]: Running on port ${PORT}`);
+// httpServer.listen(PORT, () => {
+//   console.log(`[SERVER]: Running on port ${PORT}`);
+// });
+
+connectMongo().then(() => {
+  const PORT = process.env.PORT || 5000;
+  httpServer.listen(PORT, () => {
+    console.log(`[SERVER]: Running on port ${PORT}`);
+  });
 });
 
 module.exports = { app, httpServer };
