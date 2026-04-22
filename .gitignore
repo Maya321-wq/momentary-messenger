@@ -1,0 +1,7 @@
+node_modules/
+.env
+.env.local
+*.env
+serviceAccountKey.json
+.next/
+dist/
