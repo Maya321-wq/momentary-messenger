@@ -1,26 +1,129 @@
 @import "tailwindcss";
 
+/* ─── Terminal Design Tokens ─────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-primary:    #0d0f0f;
+  --bg-secondary:  #111414;
+  --bg-panel:      #141818;
+  --bg-input:      #0a0c0c;
+
+  --border:        #1e2424;
+  --border-accent: #2a3535;
+
+  --text-primary:  #c8d8d0;
+  --text-dim:      #4a6060;
+  --text-muted:    #2e4040;
+
+  /* tag colors */
+  --tag-auth:      #4ade80;   /* green */
+  --tag-socket:    #60a5fa;   /* blue  */
+  --tag-redis:     #f59e0b;   /* amber */
+  --tag-ghost:     #a78bfa;   /* violet */
+  --tag-twilio:    #f472b6;   /* pink  */
+  --tag-error:     #f87171;   /* red   */
+  --tag-system:    #94a3b8;   /* slate */
+
+  --accent:        #4ade80;
+  --accent-dim:    rgba(74, 222, 128, 0.12);
+
+  --cursor-blink:  #4ade80;
+  --scan-color:    rgba(74, 222, 128, 0.015);
+
+  --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", "Consolas", monospace;
+  --font-ui:   var(--font-mono);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ─── Reset & Base ────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html, body {
+  height: 100%;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* CRT scanline overlay */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    var(--scan-color) 2px,
+    var(--scan-color) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ─── Scrollbar ───────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-accent); border-radius: 2px; }
+
+/* ─── Terminal Cursor Blink ───────────────────────────────────── */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+.cursor-blink::after {
+  content: "▋";
+  color: var(--cursor-blink);
+  animation: blink 1s step-end infinite;
+  margin-left: 2px;
+}
+
+/* ─── Tag Badges ──────────────────────────────────────────────── */
+.tag { font-weight: 700; letter-spacing: 0.05em; }
+.tag-AUTH   { color: var(--tag-auth); }
+.tag-SOCKET { color: var(--tag-socket); }
+.tag-REDIS  { color: var(--tag-redis); }
+.tag-GHOST  { color: var(--tag-ghost); }
+.tag-TWILIO { color: var(--tag-twilio); }
+.tag-ERROR  { color: var(--tag-error); }
+.tag-SYSTEM { color: var(--tag-system); }
+
+/* ─── Ghost Wipe Animation ────────────────────────────────────── */
+@keyframes glitch-out {
+  0%   { opacity: 1; transform: translateX(0); filter: blur(0); }
+  20%  { opacity: 0.8; transform: translateX(-3px); filter: blur(1px); }
+  40%  { opacity: 0.5; transform: translateX(3px); filter: blur(2px); }
+  60%  { opacity: 0.2; transform: translateX(-2px); filter: blur(3px); }
+  100% { opacity: 0; transform: translateX(0); filter: blur(8px); }
+}
+
+.ghost-wipe {
+  animation: glitch-out 0.6s ease-in forwards;
+}
+
+/* ─── Panel fade-in ───────────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-in { animation: fadeIn 0.3s ease forwards; }
+
+/* ─── Input focus ring ────────────────────────────────────────── */
+.terminal-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent-dim), 0 0 12px var(--accent-dim);
+}
+
+/* ─── Button hover ────────────────────────────────────────────── */
+.btn-ghost:hover {
+  background: var(--accent-dim);
+  color: var(--accent);
 }
